@@ -4,10 +4,10 @@ $email = Read-Host "To fill the template, tell me your e-mail address (also for 
 
 Write-Host "Patching files..."
 
-(Get-Content "Cargo.toml") -replace "eframe_template", $crate | Set-Content "Cargo.toml"
-(Get-Content "src\main.rs") -replace "eframe_template", $crate | Set-Content "src\main.rs"
-(Get-Content "index.html") -replace "eframe template", $crate -replace "eframe_template", $crate | Set-Content "index.html"
-(Get-Content "assets\sw.js") -replace "eframe_template", $crate | Set-Content "assets\sw.js"
-(Get-Content "Cargo.toml") -replace "Emil Ernerfeldt", $name -replace "emil.ernerfeldt@gmail.com", $email | Set-Content "Cargo.toml"
+(Get-Content "Cargo.toml") -replace "ThinkRecord", $crate | Set-Content "Cargo.toml"
+(Get-Content "src\main.rs") -replace "ThinkRecord", $crate | Set-Content "src\main.rs"
+(Get-Content "index.html") -replace "ThinkRecord", $crate -replace "eframe_template", $crate | Set-Content "index.html"
+(Get-Content "assets\sw.js") -replace "ThinkRecord", $crate | Set-Content "assets\sw.js"
+(Get-Content "Cargo.toml") -replace "Alexander Engelmark", $name -replace "aleen199@student.liu.se", $email | Set-Content "Cargo.toml"
 
 Write-Host "Done."

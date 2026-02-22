@@ -5,6 +5,9 @@
 #[cfg(not(target_arch = "wasm32"))]
 fn main() -> eframe::Result {
     env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
+    let rt = tokio::runtime::Runtime::new().expect("Unable to create Runtime");
+
+    let _enter = rt.enter();
 
     let native_options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -18,9 +21,9 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "eframe template",
+        "ThinkRecord",
         native_options,
-        Box::new(|cc| Ok(Box::new(eframe_template::TemplateApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(ThinkRecord::TemplateApp::new(cc)))),
     )
 }
 
