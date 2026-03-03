@@ -5,7 +5,8 @@ use std::path::PathBuf;
 use eframe::egui;
 use egui_file_dialog::FileDialog;
 
-use crate::recorder::{GRATITUDE_TIME, INSTRUCTION_TIME, PAUSE_TIME, Recorder, TALK_TIME};
+
+use crate::recorder::{GRATITUDE_TIME, INSTRUCTION_TIME, PAUSE_TIME, Recorder, TALK_TIME, MicError};
 use crate::subject;
 use crate::transcribe::{load_wav, transcribe};
 use std::sync::mpsc::{self, Receiver, Sender};
@@ -17,6 +18,7 @@ pub struct TemplateApp {
     picked_out_directory: Option<PathBuf>,
     subject_label: String,
     session_label: String,
+    session_length: u64,
     perturbation_1_id: String,
     perturbation_2_id: String,
     #[serde(skip)] // This how to opt-out of serialization of a field
@@ -121,6 +123,7 @@ impl Default for TemplateApp {
             session_label: "None".to_owned(),
             perturbation_1_id: "None".to_owned(),
             perturbation_2_id: "None".to_owned(),
+            session_length: 30,
             file_to_transcribe: None,
             transcribe_file_dialog: FileDialog::new(),
             out_file_dialog: FileDialog::new(),
@@ -568,6 +571,53 @@ impl eframe::App for TemplateApp {
                         "English",
                     );
                 });
+                
+                ui.separator();
+                
+                ui.heading("Record freely");
+                
+                            if ui.button("Start recording to local .wav file").clicked() {
+                let current_dir = env::current_dir().unwrap();
+                let recording_path: PathBuf = self
+                    .picked_out_directory
+                    .clone()
+                    .unwrap_or_else(|| current_dir);
+                let rpath_str = recording_path.into_os_string().into_string().unwrap();
+                let wav_save_name = format!(
+                    "{}/Recording_Subject_{}_Session_{}.wav",
+                    rpath_str, self.subject_label, self.session_label
+                );
+
+                //TODO: !!!!
+                // Scale up recording time so that I don't record in seconds
+                //let rec_time = self.session_length * 60;
+
+                println!("Will record to {:?}", wav_save_name);
+
+                if let Err(e) = subject::save_session_metadata(
+                    self.subject_label.clone(),
+                    self.session_label.clone(),
+                    self.perturbation_1_id.clone(),
+                    self.perturbation_2_id.clone(),
+                    self.session_length.clone(),
+                    wav_save_name.clone(),
+                ) {
+                    eprintln!("Saving of metadata failed: {}", e);
+                }
+
+                match Recorder::record_to_file(&wav_save_name, self.session_length) {
+                    Ok(()) => println!("Recording completed successfully!"),
+                    Err(MicError::DeviceNotFound) => eprintln!("No microphone found"),
+                    Err(MicError::Other(msg)) => eprintln!("Recording error: {}", msg),
+                    _ => eprintln!("Unknown error"),
+                }
+            }
+                
+                
+                
+                ui.add(egui::Slider::new(&mut self.session_length, 1..=300).text("Session length"));
+                
+                ui.separator();
 
                 egui::ComboBox::from_label(
                     "Select model for text transcription (for on-line and off-line transcription)",

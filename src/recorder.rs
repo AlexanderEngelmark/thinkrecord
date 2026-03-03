@@ -10,10 +10,10 @@ use std::{
 pub struct Recorder;
 
 pub const INSTRUCTION_TIME: tokio::time::Duration = tokio::time::Duration::from_secs(120);
-pub const PAUSE_TIME: tokio::time::Duration = tokio::time::Duration::from_secs(60);
+pub const PAUSE_TIME: tokio::time::Duration = tokio::time::Duration::from_secs(60); //60
 pub const GRATITUDE_TIME: tokio::time::Duration = tokio::time::Duration::from_secs(180);
 
-pub const TALK_TIME: u64 = 60;
+pub const TALK_TIME: u64 = 60; // 60
 
 #[derive(Debug)]
 pub enum MicError {
